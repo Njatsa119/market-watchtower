@@ -1,15 +1,14 @@
 # Market Watchtower
 
-A lightweight market intelligence dashboard for crypto and stock signals, sentiment, rumor detection and macro/market story monitoring.
+A lightweight market intelligence dashboard for crypto and stock signals, sentiment, rumor detection, social chatter, and alerting.
 
 ## Features
 
-- Crypto market overview (BTC, ETH, SOL, ADA)
-- Stock market snapshots (AAPL, NVDA, MSFT, TSLA)
-- News sentiment and rumor scoring
-- Watchlist-like dashboard cards
-- Alerts and signal summaries
-- FastAPI backend + static frontend
+- Live market snapshots for crypto and equities
+- RSS news aggregation + sentiment and rumor scoring
+- Social/X-style chatter feed with fallback data
+- Alert generation based on market momentum, rumor risk, and social acceleration
+- FastAPI backend powering a single-page dashboard
 
 ## Tech stack
 
@@ -17,7 +16,6 @@ A lightweight market intelligence dashboard for crypto and stock signals, sentim
 - FastAPI
 - Requests
 - Feedparser
-- Static frontend with HTML/CSS/JS
 
 ## Quick start
 
@@ -35,16 +33,15 @@ Then open:
 http://localhost:8000
 ```
 
-The app serves a frontend at the root URL and API routes under `/api/*`.
-
-## Environment variables (optional)
+## Optional environment variables
 
 ```bash
 export ALPHA_VANTAGE_KEY="your_key_here"
+export X_BEARER_TOKEN="your_x_bearer_token_here"
 ```
 
-The app works without a key using fallback sample data and public feeds.
+Without keys, the app uses public fallback data and sample sentiment feeds so the dashboard still works.
 
 ## Notes
 
-This is a prototype watchtower intended for research and exploration. It should not be treated as investment advice.
+This is a prototype and research dashboard. It is not investment advice.

@@ -1,78 +1,69 @@
-import re
-from typing import Any, Dict, List
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Watchtower</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">INTELLIGENCE HUB</p>
+          <h1>Market Watchtower</h1>
+        </div>
+        <div class="status-pill">Live monitor</div>
+      </header>
 
-import feedparser
-import requests
+      <main>
+        <section class="hero-grid">
+          <div class="card hero-card">
+            <h2>Macro pulse</h2>
+            <p id="market-summary">Loading market overview...</p>
+          </div>
+          <div class="card hero-card">
+            <h2>Signals</h2>
+            <ul id="signal-list" class="signal-list"></ul>
+          </div>
+        </section>
 
-NEWS_URLS = [
-    "https://news.google.com/rss/search?q=bitcoin+crypto",
-    "https://news.google.com/rss/search?q=stock+market",
-    "https://news.google.com/rss/search?q=crypto+rumor",
-]
+        <section class="grid-section">
+          <div class="card">
+            <div class="section-header">
+              <h2>Watchlist</h2>
+            </div>
+            <div id="asset-grid" class="asset-grid"></div>
+          </div>
+        </section>
 
-POSITIVE_WORDS = [
-    "surge", "rally", "breakout", "bullish", "support", "momentum", "uptrend", "strong", "gain",
-    "boost", "rebound", "approval", "adoption", "inflow", "bulls"
-]
-NEGATIVE_WORDS = [
-    "drop", "selloff", "bearish", "panic", "liquidity", "crash", "risk", "weak", "decline", "down", "pressure",
-    "dump", "fraud", "hack", "warning", "concern"
-]
-RUMOR_WORDS = [
-    "rumor", "allegedly", "whistleblower", "leak", "speculation", "insider", "possible", "unconfirmed",
-    "secret", "mystery", "frenzy", "pump", "manipulation"
-]
+        <section class="grid-section dual-grid">
+          <div class="card">
+            <div class="section-header">
+              <h2>Rumor + sentiment feed</h2>
+            </div>
+            <ul id="news-list" class="feed-list"></ul>
+          </div>
 
+          <div class="card">
+            <div class="section-header">
+              <h2>Twitter / social signal</h2>
+            </div>
+            <ul id="social-list" class="feed-list"></ul>
+          </div>
+        </section>
 
-def _score_headline(title: str) -> Dict[str, float]:
-    text = title.lower()
-    pos = sum(1 for word in POSITIVE_WORDS if word in text)
-    neg = sum(1 for word in NEGATIVE_WORDS if word in text)
-    rumor = sum(1 for word in RUMOR_WORDS if word in text)
+        <section class="grid-section">
+          <div class="card">
+            <div class="section-header">
+              <h2>Alerts</h2>
+            </div>
+            <ul id="alerts-list" class="feed-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
 
-    sentiment = (pos - neg) / max(1, pos + neg + 1)
-    rumor_score = min(1.0, rumor / 5.0)
-    return {"sentiment": round(sentiment, 2), "rumor_index": round(rumor_score, 2)}
-
-
-def _safe_text(value: Any) -> str:
-    return str(value or "")
-
-
-def fetch_news(limit: int = 12) -> List[Dict[str, Any]]:
-    all_entries: List[Dict[str, Any]] = []
-
-    for url in NEWS_URLS:
-        try:
-            response = requests.get(url, timeout=12, headers={"User-Agent": "MarketWatchtower/0.1"})
-            response.raise_for_status()
-            feed = feedparser.parse(response.text)
-            for entry in feed.entries[:5]:
-                title = _safe_text(entry.get("title", "News update"))
-                summary = _safe_text(entry.get("summary", title))
-                score = _score_headline(title)
-                all_entries.append(
-                    {
-                        "title": title,
-                        "summary": summary[:180],
-                        "url": _safe_text(entry.get("link", "#")),
-                        "published": _safe_text(entry.get("published", "recent")),
-                        "sentiment": score["sentiment"],
-                        "rumor_index": score["rumor_index"],
-                        "category": "markets",
-                    }
-                )
-        except Exception:
-            continue
-
-    # Deduplicate by title
-    seen = set()
-    unique = []
-    for item in all_entries:
-        key = item["title"]
-        if key in seen:
-            continue
-        seen.add(key)
-        unique.append(item)
-
-    return unique[:limit]
+    <script src="./app.js"></script>
+  </body>
+</html>
