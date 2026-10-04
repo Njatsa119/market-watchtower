@@ -1,14 +1,26 @@
 const API_URL = "http://localhost:8000/api/dashboard";
+const FALLBACK_URL = "./sample_data.json";
 
 function formatCurrency(value) {
   return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 }
 
-async function loadDashboard() {
+async function fetchDashboard() {
+  // Try live API first (for local or deployed backend). If it fails, load the static demo JSON.
   try {
     const response = await fetch(API_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error("Failed to load dashboard");
-    const data = await response.json();
+    if (!response.ok) throw new Error("API fetch failed");
+    return await response.json();
+  } catch (err) {
+    // Fallback to bundled sample data so the GitHub Pages demo works on phones and without a backend.
+    const fallback = await fetch(FALLBACK_URL, { cache: "no-store" });
+    return await fallback.json();
+  }
+}
+
+async function loadDashboard() {
+  try {
+    const data = await fetchDashboard();
     renderSummary(data.market_summary || {});
     renderAssets(data.assets || []);
     renderHistory(data.history || {});
@@ -16,7 +28,7 @@ async function loadDashboard() {
     renderSocial(data.social || []);
     renderAlerts(data.alerts || []);
   } catch (error) {
-    document.getElementById("market-summary").textContent = "The market monitor is unavailable right now. Please restart the backend.";
+    document.getElementById("market-summary").textContent = "The market monitor is unavailable right now.";
     console.error(error);
   }
 }
