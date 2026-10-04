@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Watchtower</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">INTELLIGENCE HUB</p>
+          <h1>Market Watchtower</h1>
+        </div>
+        <div class="status-pill">Live monitor</div>
+      </header>
+
+      <main>
+        <section class="hero-grid">
+          <div class="card hero-card">
+            <h2>Macro pulse</h2>
+            <p id="market-summary">Loading market overview...</p>
+          </div>
+          <div class="card hero-card">
+            <h2>Signals</h2>
+            <ul id="signal-list" class="signal-list"></ul>
+          </div>
+        </section>
+
+        <section class="grid-section">
+          <div class="card">
+            <div class="section-header">
+              <h2>Watchlist</h2>
+            </div>
+            <div id="asset-grid" class="asset-grid"></div>
+          </div>
+        </section>
+
+        <section class="grid-section dual-grid">
+          <div class="card">
+            <div class="section-header">
+              <h2>Rumor + sentiment feed</h2>
+            </div>
+            <ul id="news-list" class="feed-list"></ul>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <h2>Alerts</h2>
+            </div>
+            <ul id="alerts-list" class="feed-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
