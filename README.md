@@ -8,6 +8,7 @@ A lightweight market intelligence dashboard for crypto and stock signals, sentim
 - RSS news aggregation + sentiment and rumor scoring
 - Social/X-style chatter feed with fallback data
 - Alert generation based on market momentum, rumor risk, and social acceleration
+- Scheduled refresh + webhook alert support
 - FastAPI backend powering a single-page dashboard
 
 ## Tech stack
@@ -16,6 +17,7 @@ A lightweight market intelligence dashboard for crypto and stock signals, sentim
 - FastAPI
 - Requests
 - Feedparser
+- APScheduler
 
 ## Quick start
 
@@ -38,6 +40,9 @@ http://localhost:8000
 ```bash
 export ALPHA_VANTAGE_KEY="your_key_here"
 export X_BEARER_TOKEN="your_x_bearer_token_here"
+export ALERT_WEBHOOK_URLS="https://example.com/alerts,https://hooks.slack.com/services/xxx"
+export TELEGRAM_BOT_TOKEN="your_bot_token"
+export TELEGRAM_CHAT_ID="your_chat_id"
 ```
 
 Without keys, the app uses public fallback data and sample sentiment feeds so the dashboard still works.
