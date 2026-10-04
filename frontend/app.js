@@ -1,12 +1,17 @@
 const API_URL = "http://localhost:8000/api/dashboard";
 
+function formatCurrency(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+}
+
 async function loadDashboard() {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, { cache: "no-store" });
     if (!response.ok) throw new Error("Failed to load dashboard");
     const data = await response.json();
     renderSummary(data.market_summary || {});
     renderAssets(data.assets || []);
+    renderHistory(data.history || {});
     renderNews(data.news || []);
     renderSocial(data.social || []);
     renderAlerts(data.alerts || []);
@@ -44,11 +49,59 @@ function renderAssets(assets) {
           <div class="symbol">${asset.symbol}</div>
           <span class="badge ${badgeClass}">${badgeText}</span>
         </div>
-        <div class="asset-price">$${Number(asset.price || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+        <div class="asset-price">${formatCurrency(asset.price)}</div>
         <div class="asset-meta"><span>24h</span><strong>${Number(asset.change_pct || 0).toFixed(2)}%</strong></div>
         <div class="asset-meta"><span>Signal</span><strong>${Number(asset.signal_score || 0).toFixed(2)}</strong></div>
         <div class="asset-meta"><span>Rumor</span><strong>${Number(asset.rumor_index || 0).toFixed(2)}</strong></div>
       </article>
+    `;
+  }).join("");
+}
+
+function createSparkline(points, color) {
+  if (!points || points.length === 0) return "";
+  const width = 220;
+  const height = 60;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+
+  const path = points.map((value, index) => {
+    const x = (index / (points.length - 1)) * width;
+    const y = height - ((value - min) / range) * (height - 8) - 4;
+    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+  }).join(' ');
+
+  return `
+    <svg class="sparkline" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="sparkline">
+      <path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"></path>
+    </svg>
+  `;
+}
+
+function renderHistory(history) {
+  const historyGrid = document.getElementById("history-grid");
+  const symbols = Object.entries(history || {});
+  if (!symbols.length) {
+    historyGrid.innerHTML = "No trend data available.";
+    return;
+  }
+
+  historyGrid.innerHTML = symbols.slice(0, 6).map(([symbol, points]) => {
+    const isPositive = Number(points[points.length - 1] || 0) >= Number(points[0] || 0);
+    const color = isPositive ? "#57d38a" : "#f46d6d";
+    return `
+      <div class="history-card">
+        <div class="history-header">
+          <strong>${symbol}</strong>
+          <span class="trend ${isPositive ? 'up' : 'down'}">${isPositive ? 'Up' : 'Down'}</span>
+        </div>
+        ${createSparkline(points, color)}
+        <div class="history-footer">
+          <span>${formatCurrency(points[0])}</span>
+          <span>${formatCurrency(points[points.length - 1])}</span>
+        </div>
+      </div>
     `;
   }).join("");
 }
@@ -101,3 +154,4 @@ function renderAlerts(alerts) {
 }
 
 loadDashboard();
+setInterval(loadDashboard, 60000);

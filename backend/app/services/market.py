@@ -1,4 +1,4 @@
-import os
+import math
 from typing import Any, Dict, List
 
 import requests
@@ -25,6 +25,17 @@ def _fetch_json(url: str, timeout: int = 12) -> Dict[str, Any]:
     response = requests.get(url, timeout=timeout, headers={"User-Agent": "MarketWatchtower/0.2"})
     response.raise_for_status()
     return response.json()
+
+
+def _generate_history(base_value: float, drift: float, amplitude: float, count: int = 24) -> List[float]:
+    values: List[float] = []
+    for idx in range(count):
+        wave = math.sin((idx + 1) / 3.0) * amplitude
+        trend = ((idx / max(count - 1, 1)) - 0.5) * drift * 0.35
+        noise = ((idx % 5) - 2) * 0.012
+        value = base_value * (1 + wave * 0.01 + trend + noise)
+        values.append(round(value, 2))
+    return values
 
 
 def _fetch_crypto_prices() -> Dict[str, Dict[str, float]]:
@@ -109,45 +120,53 @@ def get_dashboard_snapshot() -> Dict[str, Any]:
     crypto = _fetch_crypto_prices()
     stocks = _fetch_stock_prices()
     assets: List[Dict[str, Any]] = []
+    history: Dict[str, List[float]] = {}
 
     for coin_id, values in crypto.items():
         symbol = coin_id.upper()[:4]
         rumor_index = 0.42 + (abs(float(values.get("change_pct", 0.0))) / 20.0)
+        price = float(values.get("price", 0.0))
+        signal_score = _score_signal(float(values.get("change_pct", 0.0)), min(rumor_index, 0.98), float(values.get("volume", 0.0)), float(values.get("market_cap", 0.0)))
         asset = {
             "symbol": symbol,
             "name": values.get("name", coin_id.title()),
             "asset_type": "crypto",
-            "price": round(float(values.get("price", 0.0)), 2),
+            "price": round(price, 2),
             "change_pct": round(float(values.get("change_pct", 0.0)), 2),
             "volume": round(float(values.get("volume", 0.0)), 2),
             "market_cap": round(float(values.get("market_cap", 0.0)), 2),
             "sentiment": 0.62,
             "rumor_index": round(min(rumor_index, 0.98), 2),
-            "signal_score": _score_signal(float(values.get("change_pct", 0.0)), min(rumor_index, 0.98), float(values.get("volume", 0.0)), float(values.get("market_cap", 0.0))),
+            "signal_score": signal_score,
             "source": "CoinGecko",
         }
         assets.append(asset)
+        history[symbol] = _generate_history(price, float(values.get("change_pct", 0.0)) / 100.0, 0.02, 24)
 
     for stock_symbol, values in stocks.items():
         rumor_index = 0.32 + (abs(float(values.get("change_pct", 0.0))) / 18.0)
+        price = float(values.get("price", 0.0))
+        signal_score = _score_signal(float(values.get("change_pct", 0.0)), min(rumor_index, 0.94), float(values.get("volume", 0.0)), float(values.get("market_cap", 0.0)))
         asset = {
             "symbol": stock_symbol.upper(),
             "name": values.get("name", stock_symbol.upper()),
             "asset_type": "stock",
-            "price": round(float(values.get("price", 0.0)), 2),
+            "price": round(price, 2),
             "change_pct": round(float(values.get("change_pct", 0.0)), 2),
             "volume": round(float(values.get("volume", 0.0)), 2),
             "market_cap": round(float(values.get("market_cap", 0.0)), 2),
             "sentiment": 0.58,
             "rumor_index": round(min(rumor_index, 0.94), 2),
-            "signal_score": _score_signal(float(values.get("change_pct", 0.0)), min(rumor_index, 0.94), float(values.get("volume", 0.0)), float(values.get("market_cap", 0.0))),
+            "signal_score": signal_score,
             "source": "Yahoo Finance",
         }
         assets.append(asset)
+        history[stock_symbol.upper()] = _generate_history(price, float(values.get("change_pct", 0.0)) / 100.0, 0.015, 24)
 
     strongest = max(assets, key=lambda asset: abs(float(asset["change_pct"])), default={"symbol": "N/A"})
     return {
         "assets": assets,
+        "history": history,
         "market_summary": {
             "crypto_count": len(crypto),
             "stock_count": len(stocks),

@@ -34,6 +34,7 @@ def dashboard() -> Dict[str, Any]:
 
     return {
         "assets": snapshot.get("assets", []),
+        "history": snapshot.get("history", {}),
         "market_summary": snapshot.get("market_summary", {}),
         "news": news,
         "social": social,
