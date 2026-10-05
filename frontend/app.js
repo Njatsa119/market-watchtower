@@ -1,217 +1,169 @@
-:root {
-  --bg: #0a1020;
-  --panel: #121b2d;
-  --panel-strong: #1a2540;
-  --border: rgba(160, 180, 220, 0.18);
-  --text: #edf3ff;
-  --muted: #a8b4cf;
-  --green: #57d38a;
-  --red: #f46d6d;
-  --amber: #f5c869;
-  --cyan: #76d8ff;
+const API_URL = "http://localhost:8000/api/dashboard";
+const FALLBACK_URL = "./sample_data.json";
+
+function formatCurrency(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: radial-gradient(circle at top, #101b2f 0%, var(--bg) 45%);
-  color: var(--text);
-  font-family: Inter, Arial, sans-serif;
-}
-
-.page-shell {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 28px 20px 48px;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-
-.eyebrow {
-  margin: 0 0 6px;
-  color: var(--cyan);
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  font-weight: 700;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(2rem, 3vw, 3rem);
-}
-
-.status-pill {
-  background: rgba(87, 211, 138, 0.12);
-  border: 1px solid rgba(87, 211, 138, 0.44);
-  color: var(--green);
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.hero-grid,
-.dual-grid {
-  display: grid;
-  gap: 20px;
-}
-
-.hero-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 20px;
-}
-
-.grid-section {
-  margin-top: 22px;
-}
-
-.card {
-  background: rgba(18, 27, 45, 0.72);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-  padding: 20px;
-}
-
-.hero-card p {
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 0;
-}
-
-.signal-list,
-.feed-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.signal-list li,
-.feed-list li {
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  margin-top: 10px;
-}
-
-.signal-list li:first-child,
-.feed-list li:first-child {
-  border-top: none;
-  margin-top: 0;
-  padding-top: 0;
-}
-
-.section-header {
-  margin-bottom: 14px;
-}
-
-.section-header h2 {
-  margin: 0;
-  font-size: 1.15rem;
-}
-
-.asset-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.asset-card {
-  background: var(--panel-strong);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.asset-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.symbol {
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.badge {
-  border-radius: 999px;
-  padding: 4px 8px;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.badge.up {
-  background: rgba(87, 211, 138, 0.12);
-  color: var(--green);
-}
-
-.badge.down {
-  background: rgba(244, 109, 109, 0.12);
-  color: var(--red);
-}
-
-.asset-price {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 8px 0;
-}
-
-.asset-meta {
-  display: flex;
-  justify-content: space-between;
-  color: var(--muted);
-  font-size: 0.86rem;
-}
-
-.asset-meta strong {
-  color: var(--text);
-}
-
-.feed-item {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-.feed-item h3 {
-  margin: 0 0 6px;
-  font-size: 0.98rem;
-  line-height: 1.4;
-}
-
-.feed-item p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.meta-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding-top: 10px;
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-
-.meta-row .score {
-  color: var(--amber);
-}
-
-.dual-grid {
-  grid-template-columns: 1.25fr 0.75fr;
-}
-
-@media (max-width: 680px) {
-  .hero-grid,
-  .dual-grid {
-    grid-template-columns: 1fr;
+async function fetchDashboard() {
+  // Try live API first (for local or deployed backend). If it fails, load the static demo JSON.
+  try {
+    const response = await fetch(API_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error("API fetch failed");
+    return await response.json();
+  } catch (err) {
+    // Fallback to bundled sample data so the GitHub Pages demo works on phones and without a backend.
+    const fallback = await fetch(FALLBACK_URL, { cache: "no-store" });
+    return await fallback.json();
   }
 }
+
+async function loadDashboard() {
+  try {
+    const data = await fetchDashboard();
+    renderSummary(data.market_summary || {});
+    renderAssets(data.assets || []);
+    renderHistory(data.history || {});
+    renderNews(data.news || []);
+    renderSocial(data.social || []);
+    renderAlerts(data.alerts || []);
+  } catch (error) {
+    document.getElementById("market-summary").textContent = "The market monitor is unavailable right now.";
+    console.error(error);
+  }
+}
+
+function renderSummary(summary) {
+  const strongest = summary.strongest_signal || { symbol: "N/A" };
+  const bias = summary.market_bias || "neutral";
+  document.getElementById("market-summary").textContent =
+    `Tracking ${summary.crypto_count || 0} crypto assets and ${summary.stock_count || 0} equities. Market bias: ${bias}. Strongest current move: ${strongest.symbol}.`;
+
+  const signals = [
+    `Crypto market breadth: ${summary.crypto_count || 0} tracked assets`,
+    `Equity coverage: ${summary.stock_count || 0} tracked stocks`,
+    `Current bias: ${bias}`
+  ];
+
+  const signalList = document.getElementById("signal-list");
+  signalList.innerHTML = signals.map((signal) => `<li>${signal}</li>`).join("");
+}
+
+function renderAssets(assets) {
+  const assetGrid = document.getElementById("asset-grid");
+  assetGrid.innerHTML = assets.map((asset) => {
+    const isUp = Number(asset.change_pct || 0) >= 0;
+    const badgeClass = isUp ? "up" : "down";
+    const badgeText = isUp ? "Bullish" : "Risk";
+    return `
+      <article class="asset-card">
+        <div class="asset-card-header">
+          <div class="symbol">${asset.symbol}</div>
+          <span class="badge ${badgeClass}">${badgeText}</span>
+        </div>
+        <div class="asset-price">${formatCurrency(asset.price)}</div>
+        <div class="asset-meta"><span>24h</span><strong>${Number(asset.change_pct || 0).toFixed(2)}%</strong></div>
+        <div class="asset-meta"><span>Signal</span><strong>${Number(asset.signal_score || 0).toFixed(2)}</strong></div>
+        <div class="asset-meta"><span>Rumor</span><strong>${Number(asset.rumor_index || 0).toFixed(2)}</strong></div>
+      </article>
+    `;
+  }).join("");
+}
+
+function createSparkline(points, color) {
+  if (!points || points.length === 0) return "";
+  const width = 220;
+  const height = 60;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+
+  const path = points.map((value, index) => {
+    const x = (index / (points.length - 1)) * width;
+    const y = height - ((value - min) / range) * (height - 8) - 4;
+    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+  }).join(' ');
+
+  return `
+    <svg class="sparkline" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="sparkline">
+      <path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"></path>
+    </svg>
+  `;
+}
+
+function renderHistory(history) {
+  const historyGrid = document.getElementById("history-grid");
+  const symbols = Object.entries(history || {});
+  if (!symbols.length) {
+    historyGrid.innerHTML = "No trend data available.";
+    return;
+  }
+
+  historyGrid.innerHTML = symbols.slice(0, 6).map(([symbol, points]) => {
+    const isPositive = Number(points[points.length - 1] || 0) >= Number(points[0] || 0);
+    const color = isPositive ? "#57d38a" : "#f46d6d";
+    return `
+      <div class="history-card">
+        <div class="history-header">
+          <strong>${symbol}</strong>
+          <span class="trend ${isPositive ? 'up' : 'down'}">${isPositive ? 'Up' : 'Down'}</span>
+        </div>
+        ${createSparkline(points, color)}
+        <div class="history-footer">
+          <span>${formatCurrency(points[0])}</span>
+          <span>${formatCurrency(points[points.length - 1])}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderNews(news) {
+  const newsList = document.getElementById("news-list");
+  newsList.innerHTML = news.map((item) => `
+    <li>
+      <a class="feed-item" href="${item.url || '#'}" target="_blank" rel="noreferrer">
+        <h3>${item.title}</h3>
+        <p>${item.summary}</p>
+        <div class="meta-row">
+          <span>${item.published || 'recent'}</span>
+          <span class="score">sentiment ${Number(item.sentiment || 0).toFixed(2)} / rumor ${Number(item.rumor_index || 0).toFixed(2)}</span>
+        </div>
+      </a>
+    </li>
+  `).join("");
+}
+
+function renderSocial(social) {
+  const socialList = document.getElementById("social-list");
+  socialList.innerHTML = social.map((item) => `
+    <li>
+      <div class="feed-item">
+        <h3>${item.symbol} • ${item.author}</h3>
+        <p>${item.content}</p>
+        <div class="meta-row">
+          <span>${item.engagement || 0} engagement</span>
+          <span class="score">sentiment ${Number(item.sentiment || 0).toFixed(2)} / rumor ${Number(item.rumor_index || 0).toFixed(2)}</span>
+        </div>
+      </div>
+    </li>
+  `).join("");
+}
+
+function renderAlerts(alerts) {
+  const alertsList = document.getElementById("alerts-list");
+  alertsList.innerHTML = alerts.map((alert) => `
+    <li>
+      <div class="feed-item">
+        <h3>${alert.symbol} • ${alert.type}</h3>
+        <p>${alert.summary}</p>
+        <div class="meta-row">
+          <span>${alert.severity}</span>
+        </div>
+      </div>
+    </li>
+  `).join("");
+}
+
+loadDashboard();
+setInterval(loadDashboard, 60000);

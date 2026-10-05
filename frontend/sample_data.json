@@ -1,0 +1,35 @@
+{
+  "assets": [
+    {"symbol": "BTC", "name": "Bitcoin", "asset_type": "crypto", "price": 62450.12, "change_pct": 1.84, "volume": 28600000000, "market_cap": 1230000000000, "sentiment": 0.62, "rumor_index": 0.42, "signal_score": 0.76, "source": "CoinGecko"},
+    {"symbol": "ETH", "name": "Ethereum", "asset_type": "crypto", "price": 3310.45, "change_pct": 2.31, "volume": 12800000000, "market_cap": 397000000000, "sentiment": 0.59, "rumor_index": 0.48, "signal_score": 0.71, "source": "CoinGecko"},
+    {"symbol": "SOL", "name": "Solana", "asset_type": "crypto", "price": 148.63, "change_pct": 3.42, "volume": 4690000000, "market_cap": 73000000000, "sentiment": 0.55, "rumor_index": 0.44, "signal_score": 0.69, "source": "CoinGecko"},
+    {"symbol": "ADA", "name": "Cardano", "asset_type": "crypto", "price": 0.72, "change_pct": -0.85, "volume": 1160000000, "market_cap": 23000000000, "sentiment": 0.48, "rumor_index": 0.35, "signal_score": 0.32, "source": "CoinGecko"},
+    {"symbol": "AAPL", "name": "Apple", "asset_type": "stock", "price": 214.58, "change_pct": 0.97, "volume": 54200000, "market_cap": 3200000000000, "sentiment": 0.61, "rumor_index": 0.28, "signal_score": 0.63, "source": "Yahoo Finance"},
+    {"symbol": "NVDA", "name": "NVIDIA", "asset_type": "stock", "price": 137.21, "change_pct": 2.64, "volume": 68200000, "market_cap": 3400000000000, "sentiment": 0.66, "rumor_index": 0.52, "signal_score": 0.81, "source": "Yahoo Finance"},
+    {"symbol": "MSFT", "name": "Microsoft", "asset_type": "stock", "price": 430.12, "change_pct": 0.61, "volume": 24900000, "market_cap": 3200000000000, "sentiment": 0.57, "rumor_index": 0.30, "signal_score": 0.58, "source": "Yahoo Finance"},
+    {"symbol": "TSLA", "name": "Tesla", "asset_type": "stock", "price": 243.75, "change_pct": -1.83, "volume": 78400000, "market_cap": 770000000000, "sentiment": 0.44, "rumor_index": 0.64, "signal_score": 0.46, "source": "Yahoo Finance"}
+  ],
+  "history": {
+    "BTC": [62200.12, 62310.55, 62250.75, 62380.23, 62490.12, 62520.44, 62600.12, 62580.22, 62450.12, 62390.00, 62410.20, 62475.10, 62540.33, 62610.12, 62650.00, 62590.10, 62530.66, 62480.77, 62460.88, 62450.12, 62440.00, 62420.50, 62410.33, 62450.12],
+    "ETH": [3280.12, 3290.50, 3295.75, 3300.23, 3305.12, 3310.45, 3312.10, 3308.00, 3305.50, 3302.00, 3300.50, 3308.10, 3310.45, 3312.00, 3315.20, 3313.40, 3311.55, 3309.33, 3308.21, 3310.45, 3309.00, 3307.50, 3305.25, 3310.45],
+    "SOL": [142.10, 143.25, 144.00, 144.50, 145.30, 146.00, 146.80, 147.20, 147.80, 148.00, 148.20, 148.63, 149.00, 149.50, 149.80, 149.30, 148.90, 148.50, 148.20, 148.63, 148.10, 147.90, 147.50, 148.63],
+    "ADA": [0.70, 0.71, 0.72, 0.72, 0.73, 0.72, 0.72, 0.71, 0.71, 0.72, 0.72, 0.72, 0.72, 0.72, 0.72, 0.72, 0.71, 0.71, 0.72, 0.72, 0.72, 0.72, 0.72, 0.72],
+    "AAPL": [212.5, 213.0, 213.2, 213.8, 214.1, 214.5, 214.58, 214.60, 214.40, 214.30, 214.20, 214.50, 214.58, 214.55, 214.60, 214.45, 214.30, 214.20, 214.10, 214.58, 214.50, 214.40, 214.35, 214.58],
+    "NVDA": [133.5, 134.1, 134.5, 135.2, 135.8, 136.0, 136.5, 136.8, 137.0, 137.1, 137.2, 137.05, 137.21, 137.30, 137.40, 137.10, 136.90, 136.80, 136.70, 137.21, 137.00, 136.80, 136.50, 137.21],
+    "MSFT": [428.5, 429.0, 429.5, 429.8, 430.0, 430.12, 430.10, 430.05, 430.00, 429.95, 429.90, 430.00, 430.12, 430.20, 430.30, 430.15, 430.00, 429.90, 429.80, 430.12, 430.00, 429.85, 429.70, 430.12],
+    "TSLA": [246.0, 245.5, 245.0, 244.8, 244.5, 244.0, 243.9, 243.8, 243.75, 243.70, 243.60, 243.80, 243.75, 243.70, 243.65, 243.60, 243.55, 243.50, 243.45, 243.75, 243.70, 243.65, 243.60, 243.75]
+  },
+  "market_summary": {"crypto_count": 4, "stock_count": 4, "strongest_signal": {"symbol": "NVDA", "change_pct": 2.64}, "market_bias": "risk-on"},
+  "news": [
+    {"title": "Bitcoin sees renewed interest as traders eye breakout", "summary": "Analysts note increased derivatives flow and social chatter around BTC's breakout attempt.", "url": "https://example.com/btc-breakout", "published": "2026-10-04", "sentiment": 0.34, "rumor_index": 0.42, "category": "crypto"},
+    {"title": "NVIDIA guidance lifts chip stocks", "summary": "NVDA guidance points to strong demand in AI servers, boosting sector sentiment.", "url": "https://example.com/nvda-guidance", "published": "2026-10-04", "sentiment": 0.56, "rumor_index": 0.33, "category": "stocks"}
+  ],
+  "social": [
+    {"symbol": "BTC", "author": "MarketPulse", "content": "BTC sees renewed social heat as traders debate whether the recent breakout is real or another liquidity trap.", "engagement": 18400, "sentiment": 0.58, "rumor_index": 0.71, "source": "X-like chatter", "link": "https://x.com/search?q=BTC+breakout"},
+    {"symbol": "NVDA", "author": "AlphaFlow", "content": "AI chip demand narrative still dominating the tape as large volume and chatter accelerate.", "engagement": 9600, "sentiment": 0.66, "rumor_index": 0.52, "source": "X-like chatter", "link": "https://x.com/search?q=NVDA+AI+chip"}
+  ],
+  "alerts": [
+    {"symbol": "NVDA", "type": "market_signal", "severity": "medium", "summary": "NVDA is showing elevated momentum and rumor risk. 24h move: +2.64%."},
+    {"symbol": "BTC", "type": "social_signal", "severity": "medium", "summary": "Social chatter is elevated for BTC and contains rumor-like language."}
+  ]
+}
